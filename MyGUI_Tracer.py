@@ -33,15 +33,15 @@ def UpdateList(start, child, jsonData):
     if not str(start.tag) in final:
         final[str(start.tag)] = { }
     if not lastType in final[str(start.tag)]:
-        final[str(start.tag)][lastType] =  { "Properties": final1 }
+        final[str(start.tag)][lastType] =  { "Tag Attributes": final1, "Tag Properties": { } }
     key = ""
     value = ""
     isKey = False
     for i in child.attrib:
         if i == "key":
             key = str(child.attrib[i])
-            if not key in stringTable[lastType]:
-                stringTable[lastType][key] = {"String": []}
+            if not key in stringTable[lastType]["Tag Properties"]:
+                stringTable[lastType]["Tag Properties"][key] = {"String": []}
             isKey = True
         else:
             value = str(child.attrib[i])
@@ -50,10 +50,10 @@ def UpdateList(start, child, jsonData):
         if not isKey:
             if len(value) > 0:
                 if not key in final[str(start.tag)][lastType]:
-                        final[str(start.tag)][lastType][key] = []
+                        final[str(start.tag)][lastType]["Tag Properties"][key] = []
                 if value in ["true", "false", "True", "False"]:
-                    if not "Bool" in final[str(start.tag)][lastType][key]:
-                        final[str(start.tag)][lastType][key].append("Bool")
+                    if not "Bool" in final[str(start.tag)][lastType]["Tag Properties"][key]:
+                        final[str(start.tag)][lastType]["Tag Properties"][key].append("Bool")
                 elif numberTest.isdigit() or numberTest.isdecimal():
                     vSplit = value.split(" ")
                     numberOfFloat = len(vSplit)
@@ -65,21 +65,21 @@ def UpdateList(start, child, jsonData):
                             retNum += "Float"
                         if not i == numberOfFloat-1:
                             retNum += ", "
-                    if not retNum in final[str(start.tag)][lastType][key]:
-                        final[str(start.tag)][lastType][key].append(retNum)
+                    if not retNum in final[str(start.tag)][lastType]["Tag Properties"][key]:
+                        final[str(start.tag)][lastType]["Tag Properties"][key].append(retNum)
                 elif value.endswith(".png"):
                     if not "Image.png" in final[str(start.tag)][lastType][key]:
-                        final[str(start.tag)][lastType][key].append("Image.png")
+                        final[str(start.tag)][lastType]["Tag Properties"][key].append("Image.png")
                 elif value.endswith(".jpg"):
                     if not "Image.jpg" in final[str(start.tag)][lastType][key]:
-                        final[str(start.tag)][lastType][key].append("Image.jpg")
+                        final[str(start.tag)][lastType]["Tag Properties"][key].append("Image.jpg")
                 else:
-                    if not stringTable[lastType][key] in final[str(start.tag)][lastType][key]:
-                        final[str(start.tag)][lastType][key].append(stringTable[lastType][key])
-                    indexV = final[str(start.tag)][lastType][key].index(stringTable[lastType][key])
-                    if not value in final[str(start.tag)][lastType][key][indexV]["String"]:
-                        final[str(start.tag)][lastType][key][indexV]["String"].append(value)
-                    stringTable[lastType][key] = final[str(start.tag)][lastType][key][indexV]
+                    if not stringTable[lastType][key] in final[str(start.tag)][lastType]["Tag Properties"][key]:
+                        final[str(start.tag)][lastType]["Tag Properties"][key].append(stringTable[lastType][key])
+                    indexV = final[str(start.tag)][lastType]["Tag Properties"][key].index(stringTable[lastType][key])
+                    if not value in final[str(start.tag)][lastType]["Tag Properties"][key][indexV]["String"]:
+                        final[str(start.tag)][lastType]["Tag Properties"][key][indexV]["String"].append(value)
+                    stringTable[lastType][key] = final[str(start.tag)][lastType]["Tag Properties"][key][indexV]
     return final
 
 def GetChildren(start, jsonData):
